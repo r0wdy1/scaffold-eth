@@ -64,7 +64,7 @@ export default function Address(props) {
         <a
           style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
           target="_blank"
-          href={etherscanLink}
+          
           rel="noopener noreferrer"
         >
           <Blockies seed={address.toLowerCase()} size={8} scale={2} />
@@ -96,7 +96,7 @@ export default function Address(props) {
               style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
               target="_blank"
               href={etherscanLink}
-              rel="noopener noreferrer"
+              rel="noopener noreferrer  "
             >
               {displayAddress}
             </a>

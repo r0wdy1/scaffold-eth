@@ -53,7 +53,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.kovan; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -293,7 +293,7 @@ function App(props) {
         <Menu.Item key="/debug">
           <Link to="/debug">Debug Contracts</Link>
         </Menu.Item>
-        <Menu.Item key="/hints">
+        {/* <Menu.Item key="/hints">
           <Link to="/hints">Hints</Link>
         </Menu.Item>
         <Menu.Item key="/exampleui">
@@ -304,13 +304,22 @@ function App(props) {
         </Menu.Item>
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
 
       <Switch>
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-          <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+          <Home
+            yourLocalBalance={yourLocalBalance}
+            readContracts={readContracts}
+            address={address}
+            localProvider={localProvider}
+            userSigner={userSigner}
+            writeContracts={writeContracts}
+            tx = {tx}
+            mainnetProvider={mainnetProvider}
+          />
         </Route>
         <Route exact path="/debug">
           {/*
@@ -320,7 +329,7 @@ function App(props) {
             */}
 
           <Contract
-            name="YourContract"
+            name="TalentToken"
             price={price}
             signer={userSigner}
             provider={localProvider}
@@ -387,7 +396,7 @@ function App(props) {
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
-        <Row align="middle" gutter={[4, 4]}>
+        {/* <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
           </Col>
@@ -409,7 +418,7 @@ function App(props) {
               Support
             </Button>
           </Col>
-        </Row>
+        </Row> */}
 
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>

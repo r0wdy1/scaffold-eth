@@ -1,0 +1,73 @@
+pragma solidity >=0.8.0;
+
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+
+contract TalentToken is AccessControl, ERC721URIStorage {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC721, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+
+    bytes32 public constant INTERVIEWER = keccak256("INTERVIEWER");
+    bytes32 public constant CANDIDATE = keccak256("CANDIDATE");
+
+    mapping(address => int256) public karma;
+
+    address[] public interviewers ;
+    address[] public candidates;
+
+    constructor(address admin) ERC721("TalentToken", "TLT") {
+        _grantRole(
+            0x0000000000000000000000000000000000000000000000000000000000000000,
+            admin
+        );
+    }
+
+function listCandidates() public view returns ( address [] memory) {
+    return candidates;
+}
+
+
+function listInterviewers() public view returns ( address [] memory) {
+    return interviewers;
+}
+
+
+    function grantRole(bytes32 role, address account)
+        public
+        virtual
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        if (role == keccak256("INTERVIEWER")) {
+            interviewers.push(account);
+        }
+        _grantRole(role, account);
+    }
+
+    function endorse(address to, string memory tokenURI)
+        public
+        onlyRole(INTERVIEWER)
+        returns (uint256)
+    {
+        candidates.push(to);
+        uint256 newItemId = _tokenIds.current();
+        _mint(to, newItemId);
+        _setTokenURI(newItemId, tokenURI);
+
+        _tokenIds.increment();
+        return newItemId;
+    }
+}
