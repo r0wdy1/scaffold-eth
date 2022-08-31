@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Rate } from 'antd';
 
 import { Col, Row } from 'antd';
-import EndorseForm from "./EndorseForm";
+import EndorseModal from "./EndorseModal";
 import Modal from "../components/Modal";
 import ModalContent from "../components/Modal";
 
@@ -73,8 +73,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       );
     }
   };
-  const sendEndorseTx = async (candidate) => {
-    const result = tx(writeContracts.TalentToken.endorse(candidateAddress, "token URI"), txCallBack);
+  const sendEndorseTx = async (address, tokenURI) => {
+    const result = tx(writeContracts.TalentToken.endorse(address, tokenURI), txCallBack);
     console.log("awaiting metamask/web3 confirm result...", result);
     console.log(await result);
   }
@@ -123,10 +123,13 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       </div>
       {isAdmin ? addInterviewer : null}
       {isInterviewer ? endorseCandidate : null}
-      <ModalContent
-        content={<EndorseForm sendEndorseTx={sendEndorseTx} address={candidateAddress} />}
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible} />
+      <EndorseModal 
+        isModalVisible={isModalVisible} 
+        setIsModalVisible={setIsModalVisible} 
+        sendEndorseTx={sendEndorseTx} 
+        candidateAddress={candidateAddress} 
+        interviewerAddress={address}
+      />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>
         <Col span={12}>{candidatesBoard}</Col>
