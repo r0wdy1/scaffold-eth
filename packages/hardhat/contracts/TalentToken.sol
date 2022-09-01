@@ -26,7 +26,9 @@ contract TalentToken is AccessControl, ERC721URIStorage {
     mapping(address => int256) public karma;
 
     address[] public interviewers;
-    address[] public candidates;
+
+    address[] public candidatesList;
+    mapping(address => bool) public candidatesSet;
 
     constructor(address admin) ERC721("TalentToken", "TLT") {
         _grantRole(
@@ -36,7 +38,7 @@ contract TalentToken is AccessControl, ERC721URIStorage {
     }
 
     function listCandidates() public view returns ( address [] memory) {
-        return candidates;
+        return candidatesList;
     }
 
 
@@ -62,7 +64,11 @@ contract TalentToken is AccessControl, ERC721URIStorage {
         onlyRole(INTERVIEWER)
         returns (uint256)
     {
-        candidates.push(to);
+        if (candidatesSet[to] == false) {
+            candidatesSet[to] = true;
+            candidatesList.push(to);
+        }
+        
         uint256 newItemId = _tokenIds.current();
         _mint(to, newItemId);
         _setTokenURI(newItemId, tokenURI);
