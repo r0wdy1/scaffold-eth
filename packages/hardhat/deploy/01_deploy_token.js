@@ -22,7 +22,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   await deploy("TalentToken", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [deployer],
+    args: ["0xbB3d2463Aa96D43BdC12fb23263F1AD116e5FE71"],
     log: true,
     waitConfirmations: 5,
   });

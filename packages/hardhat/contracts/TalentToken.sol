@@ -25,7 +25,13 @@ contract TalentToken is AccessControl, ERC721URIStorage {
 
     mapping(address => int256) public karma;
 
-    address[] public interviewers;
+    struct Interviewer {
+        address interviewer;
+        string companyName;
+        string websiteLink;
+    }
+
+    Interviewer[] public interviewers;
     address[] public candidates;
 
     constructor(address admin) ERC721("TalentToken", "TLT") {
@@ -40,21 +46,23 @@ contract TalentToken is AccessControl, ERC721URIStorage {
     }
 
 
-    function listInterviewers() public view returns ( address [] memory) {
+    function listInterviewers() public view returns ( Interviewer[] memory) {
         return interviewers;
     }
 
 
-    function grantRole(bytes32 role, address account)
+    function addInterviewer(address _interviewer, string memory _companyName, string memory _websiteLink)
         public
         virtual
-        override
-        onlyRole(getRoleAdmin(role))
+        onlyRole(0x0000000000000000000000000000000000000000000000000000000000000000)
     {
-        if (role == keccak256("INTERVIEWER")) {
-            interviewers.push(account);
-        }
-        _grantRole(role, account);
+            Interviewer memory newInterviewer = Interviewer(
+                _interviewer,
+                _companyName,
+                _websiteLink
+            );
+            interviewers.push(newInterviewer);
+        _grantRole(keccak256("INTERVIEWER"), _interviewer);
     }
 
     function endorse(address to, string memory tokenURI)

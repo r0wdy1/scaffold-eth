@@ -11,6 +11,7 @@ import { Col, Row } from 'antd';
 import EndorseModal from "./EndorseModal";
 import Modal from "../components/Modal";
 import ModalContent from "../components/Modal";
+import InterviewerModal from "./InterviewerModal";
 
 /**
  * web3 props can be passed from '../App.jsx' into your local view component for use
@@ -37,6 +38,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [interviewerAddress, setInterviewerAddress] = useState();
   const [candidateAddress, setCandidateAddress] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isInterviewerModalVisable, setInterviewerModalVi] = useState(false);
 
   const User = ({ address }) => (
 
@@ -50,7 +52,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   )
   const interviewersBoard = <div>
     <h2>Interviewers board</h2>
-    {interviewers?.map(address => <User address={address} />)}
+    {interviewers?.map(address => <User address={address[0]} />)}
   </div>
   const candidatesBoard = <div>
     <h2>Candidates board</h2>
@@ -97,8 +99,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
 
 
 
-  const onAddInterviewer = async () => {
-    const result = tx(writeContracts.TalentToken.grantRole(interviewerRole, interviewerAddress), txCallBack);
+  const onAddInterviewer = async (companyName,website) => {
+    const result = tx(writeContracts.TalentToken.addInterviewer(interviewerAddress,companyName,website), txCallBack);
     console.log("awaiting metamask/web3 confirm result...", result);
     console.log(await result);
 
@@ -108,7 +110,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
 
       <h3>Add a new interviewer</h3>
       <AddressInput onChange={setInterviewerAddress} />
-      <Button type="primary" size="large" onClick={onAddInterviewer} >Add</Button>
+      <Button type="primary" size="large" onClick={() => {setInterviewerModalVi(true)}}>Add</Button>
     </div>
   </div>
 
@@ -130,6 +132,11 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
         candidateAddress={candidateAddress} 
         interviewerAddress={address}
       />
+      <InterviewerModal
+        isModalVisible={isInterviewerModalVisable}
+        setIsModalVisible={setInterviewerModalVi}
+        addInterviewer={onAddInterviewer}
+        />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>
         <Col span={12}>{candidatesBoard}</Col>
