@@ -41,7 +41,7 @@ export default function Address(props) {
   const validEnsCheck = ensSplit && ensSplit[ensSplit.length - 1] === "eth";
   const etherscanLink = blockExplorerLink(address, props.blockExplorer);
   let displayAddress = address?.substr(0, 5) + "..." + address?.substr(-4);
-
+  console.log("displayAddress: ", displayAddress)
   if (validEnsCheck) {
     displayAddress = ens;
   } else if (props.size === "short") {
@@ -57,7 +57,6 @@ export default function Address(props) {
       </span>
     );
   }
-
   if (props.minimized) {
     return (
       <span style={{ verticalAlign: "middle" }}>

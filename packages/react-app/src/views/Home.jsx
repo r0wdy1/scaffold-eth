@@ -52,7 +52,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   )
   const interviewersBoard = <div>
     <h2>Interviewers board</h2>
-    {interviewers?.map(address => <User address={address[0]} />)}
+    {interviewers?.map(address => <User address={address} />)}
   </div>
   const candidatesBoard = <div>
     <h2>Candidates board</h2>
