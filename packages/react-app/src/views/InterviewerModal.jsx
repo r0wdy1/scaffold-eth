@@ -1,6 +1,4 @@
 import React from 'react';
-import { InboxOutlined } from '@ant-design/icons';
-import { pinJSONToIPFS } from '../helpers/pinata';
 import {
   Form,
   Rate,
