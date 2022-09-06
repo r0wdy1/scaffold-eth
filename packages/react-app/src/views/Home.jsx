@@ -13,6 +13,7 @@ import EndorseModal from "./EndorseModal";
 import Modal from "../components/Modal";
 import ModalContent from "../components/Modal";
 import CandidateProfileModal from "./CandidateProfileModal";
+import { getJSONFromIPFS } from "../helpers/pinata";
 
 /**
  * web3 props can be passed from '../App.jsx' into your local view component for use
@@ -34,7 +35,6 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   console.log("interviewers", interviewers);
   console.log("my address", address);
   console.log(`isAdmin=${isAdmin}, isInterviewer=${isInterviewer}`);
-  console.log(transferEvents);
 
 
 
@@ -42,6 +42,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [candidateAddress, setCandidateAddress] = useState();
   const [isEndorseModalVisible, setIsEndorseModalVisible] = useState(false);
   const [isCandidateProfileModalVisible, setIsCandidateProfileModalVisible] = useState(false);
+  const [candidateTokens, setCandidateTokens] = useState(new Array());
+  const [tokens, setTokens] = useState(new Map());
 
   const User = ({ address }) => (
 
@@ -109,14 +111,24 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   </div>
 
-  const getCandidateInfoByTokenId = (tokenId) => {
-    return readContracts.TalentToken.tokenURI(tokenId);
+  const getCandidateTokens = (address) => {
+    setCandidateAddress(address);
+    const candidateTokens = transferEvents.filter((item) => item.args.to == address).map((item) => {
+      console.log(item.args.tokenId);
+      readContracts.TalentToken.tokenURI(item.args.tokenId).then((uri) => {
+        getJSONFromIPFS(uri).then((metadata) => {
+          setTokens(new Map(tokens.set(item.args.tokenId, metadata)));
+        });
+      });
+      return item.args.tokenId;
+    })
+    setCandidateTokens(candidateTokens);
   }
   
   const getCandidateInfo = <div>
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
       <h3>Get candidate profile</h3>
-      <AddressInput onChange={setCandidateAddress} />
+      <AddressInput onChange={getCandidateTokens} />
       <Button type="primary" size="large" onClick={() => { setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
@@ -145,7 +157,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
         setIsModalVisible={setIsCandidateProfileModalVisible} 
         transferEvents={transferEvents}
         candidateAddress={candidateAddress}
-        getCandidateInfo={getCandidateInfoByTokenId}
+        candidateTokens={candidateTokens}
+        tokens={tokens}
       />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>

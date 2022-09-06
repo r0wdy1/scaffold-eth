@@ -12,13 +12,13 @@ import {
     Modal,
     Button,
     Space,
-    List
+    List,
+    Collapse,
 } from 'antd';
 
+const { Panel } = Collapse;
 
-const CandidateProfileModal = ({isModalVisible, setIsModalVisible, transferEvents, candidateAddress, getCandidateInfo}) => {
-    const [tokenURIs, setTokenURIs] = useState(new Map());
-    
+const CandidateProfileModal = ({isModalVisible, setIsModalVisible, transferEvents, candidateAddress, candidateTokens, tokens}) => {
     const onReset = () => {
         setIsModalVisible(false);
     };
@@ -26,10 +26,6 @@ const CandidateProfileModal = ({isModalVisible, setIsModalVisible, transferEvent
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
-    // transferEvents.map((item) => {
-    //     getCandidateInfo(item.args.tokenId).then((uri) => setTokenURIs(new Map(tokenURIs.set(item.args.tokenId, uri))));
-    // })
 
     return (
         <Modal 
@@ -39,18 +35,18 @@ const CandidateProfileModal = ({isModalVisible, setIsModalVisible, transferEvent
             footer={[]}//this to hide the default inputs of the modal
         >
             <div style={{ margin: "auto" }}>
-                <List
-                    bordered
-                    dataSource={transferEvents.filter((item) => item.args.to == candidateAddress)}
-                    renderItem={ item => {
-                        return (
-                            <List.Item key={item.blockNumber + "_" + item.args.tokenId}>
-                            {BigNumber.from(item.args.tokenId).toString()}
-                            {tokenURIs.get(item.args.tokenId)}
-                            </List.Item>
-                        );
-                    }}
-                />
+                <Collapse>
+                    {candidateTokens.filter(tokenId => tokens.get(tokenId) !== undefined).map(tokenId => {
+                        const token = tokens.get(tokenId);
+                        console.log(token);
+                        return (<Panel header={`Token from ${token.interviewer.address}`} key={tokenId}>
+                            <p>{token.candidate.name}</p>
+                            <p>{token.candidate.surname}</p>
+                            <p>{token.candidate.position}</p>
+                            <p>{token.candidate.rate}</p>
+                        </Panel>);
+                    })}
+                </Collapse>
             </div>
         </Modal>      
     );
