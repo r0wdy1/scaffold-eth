@@ -49,7 +49,7 @@ contract TalentToken is AccessControl, ERC721URIStorage {
         return interviewersAddress;
     }
 
-add    function getInterviewerMetaData(address _interviewer) public view returns (Interviewer memory){
+   function getInterviewerMetaData(address _interviewer) public view returns (Interviewer memory){
         return interviewers[_interviewer];
     }
 

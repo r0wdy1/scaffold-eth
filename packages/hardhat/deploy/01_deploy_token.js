@@ -2,7 +2,7 @@
 
 const { ethers } = require("hardhat");
 
-const {utils } = require("ethers");
+const { utils } = require("ethers");
 
 const localChainId = "31337";
 
@@ -22,7 +22,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   await deploy("TalentToken", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: ["0xbB3d2463Aa96D43BdC12fb23263F1AD116e5FE71"],
+    args: ["0xD7AD4f997bEA5B96300DE1fF378CD1cb8A9a1940"],
     log: true,
     waitConfirmations: 5,
   });
@@ -32,7 +32,8 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   TalentToken.grantRole(
     "0xdf8b4c520ffe197c5343c6f5aec59570151ef9a492f2c624fd45ddde6135ec42",
-   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  );
   /*  await YourContract.setPurpose("Hello");
   
     // To take ownership of yourContract using the ownable library uncomment next line and add the 
