@@ -3,11 +3,11 @@ import { ethers } from "ethers";
 import React from "react";
 import { Link } from "react-router-dom";
 import { AddressInput, Address, Blockie } from "../components";
-import { Button } from 'antd';
+import { Button } from "antd";
 import { useState } from "react";
-import { Rate } from 'antd';
+import { Rate } from "antd";
 
-import { Col, Row } from 'antd';
+import { Col, Row } from "antd";
 import EndorseModal from "./EndorseModal";
 import Modal from "../components/Modal";
 import ModalContent from "../components/Modal";
@@ -26,39 +26,51 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const interviewers = useContractReader(readContracts, "TalentToken", "listInterviewers");
   const candidates = useContractReader(readContracts, "TalentToken", "listCandidates");
   const interviewerRole = "0x6254a434224c7765cc60976b96d4c296321339f8c1d711b8cba8964de4306c78";
-  const isAdmin = useContractReader(readContracts, "TalentToken", "hasRole", ["0x0000000000000000000000000000000000000000000000000000000000000000", address]);
+  const isAdmin = useContractReader(readContracts, "TalentToken", "hasRole", [
+    "0x0000000000000000000000000000000000000000000000000000000000000000",
+    address,
+  ]);
   const isInterviewer = useContractReader(readContracts, "TalentToken", "hasRole", [interviewerRole, address]);
 
   console.log("interviewers", interviewers);
   console.log("my address", address);
   console.log(`isAdmin=${isAdmin}, isInterviewer=${isInterviewer}`);
 
-
-
   const [interviewerAddress, setInterviewerAddress] = useState();
   const [candidateAddress, setCandidateAddress] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isInterviewerModalVisable, setInterviewerModalVi] = useState(false);
 
-  const User = ({ address, isInterviewer }) => (
-
-    address ?
+  const User = ({ address, isInterviewer, tx, writeContracts }) =>
+    address ? (
       <div>
         {/* <Blockie address={address} /> */}
-        <Address value={address} ensProvider={mainnetProvider} fontSize={16} isInterviewers={isInterviewer}/>
+        <Address
+          value={address}
+          ensProvider={mainnetProvider}
+          fontSize={16}
+          isInterviewers={isInterviewer}
+          tx={tx}
+          writeContracts={writeContracts}
+        />
       </div>
-      : null
-
-  )
-  const interviewersBoard = <div>
-    <h2>Interviewers board</h2>
-    {interviewers?.map(address => <User address={address} isInterviewer={true}/>)}
-  </div>
-  const candidatesBoard = <div>
-    <h2>Candidates board</h2>
-    {candidates?.map(address => <User address={address} />)}
-  </div>
-
+    ) : null;
+  const interviewersBoard = (
+    <div>
+      <h2>Interviewers board</h2>
+      {interviewers?.map(address => (
+        <User address={address} isInterviewer={true} tx={tx} writeContracts={writeContracts} />
+      ))}
+    </div>
+  );
+  const candidatesBoard = (
+    <div>
+      <h2>Candidates board</h2>
+      {candidates?.map(address => (
+        <User address={address} />
+      ))}
+    </div>
+  );
 
   const txCallBack = update => {
     console.log("📡 Transaction Update:", update);
@@ -66,12 +78,12 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       console.log(" 🍾 Transaction " + update.hash + " finished!");
       console.log(
         " ⛽️ " +
-        update.gasUsed +
-        "/" +
-        (update.gasLimit || update.gas) +
-        " @ " +
-        parseFloat(update.gasPrice) / 1000000000 +
-        " gwei",
+          update.gasUsed +
+          "/" +
+          (update.gasLimit || update.gas) +
+          " @ " +
+          parseFloat(update.gasPrice) / 1000000000 +
+          " gwei",
       );
     }
   };
@@ -79,71 +91,77 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     const result = tx(writeContracts.TalentToken.endorse(address, tokenURI), txCallBack);
     console.log("awaiting metamask/web3 confirm result...", result);
     console.log(await result);
-  }
+  };
 
-
-  const endorseCandidate =
+  const endorseCandidate = (
     <div>
       <div style={{ width: 350, padding: 16, margin: "auto" }}>
-
         <h3>Endorse a candidate</h3>
         <AddressInput onChange={setCandidateAddress} />
         {/* <Rate allowHalf defaultValue={2.5} /> */}
-        <Button type="primary" size="large" onClick={() => { setIsModalVisible(true) }} >Add</Button>
-
-
-
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => {
+            setIsModalVisible(true);
+          }}
+        >
+          Add
+        </Button>
       </div>
     </div>
+  );
 
-
-
-
-  const onAddInterviewer = async (companyName,website) => {
-    const result = tx(writeContracts.TalentToken.addInterviewer(interviewerAddress,companyName,website), txCallBack);
+  const onAddInterviewer = async (companyName, website) => {
+    const result = tx(writeContracts.TalentToken.addInterviewer(interviewerAddress, companyName, website), txCallBack);
     console.log("awaiting metamask/web3 confirm result...", result);
     console.log(await result);
-
-  }
-  const addInterviewer = <div>
-    <div style={{ width: 350, padding: 16, margin: "auto" }}>
-
-      <h3>Add a new interviewer</h3>
-      <AddressInput onChange={setInterviewerAddress} />
-      <Button type="primary" size="large" onClick={() => {setInterviewerModalVi(true)}}>Add</Button>
+  };
+  const addInterviewer = (
+    <div>
+      <div style={{ width: 350, padding: 16, margin: "auto" }}>
+        <h3>Add a new interviewer</h3>
+        <AddressInput onChange={setInterviewerAddress} />
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => {
+            setInterviewerModalVi(true);
+          }}
+        >
+          Add
+        </Button>
+      </div>
     </div>
-  </div>
-
-
-
+  );
 
   return (
-
     <div>
       <div>
-        <h2> My current role: {isAdmin ? 'Admin' : ''} {isInterviewer ? 'interviewer' : ''}</h2>
+        <h2>
+          {" "}
+          My current role: {isAdmin ? "Admin" : ""} {isInterviewer ? "interviewer" : ""}
+        </h2>
       </div>
       {isAdmin ? addInterviewer : null}
       {isInterviewer ? endorseCandidate : null}
-      <EndorseModal 
-        isModalVisible={isModalVisible} 
-        setIsModalVisible={setIsModalVisible} 
-        sendEndorseTx={sendEndorseTx} 
-        candidateAddress={candidateAddress} 
+      <EndorseModal
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        sendEndorseTx={sendEndorseTx}
+        candidateAddress={candidateAddress}
         interviewerAddress={address}
       />
       <InterviewerModal
         isModalVisible={isInterviewerModalVisable}
         setIsModalVisible={setInterviewerModalVi}
         addInterviewer={onAddInterviewer}
-        />
+      />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>
         <Col span={12}>{candidatesBoard}</Col>
       </Row>
-
     </div>
-
   );
 }
 

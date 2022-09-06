@@ -1,11 +1,11 @@
 import { Skeleton, Typography } from "antd";
-import React from "react";
+import React, { useReducer } from "react";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import Blockies from "react-blockies";
 import { useLookupAddress } from "eth-hooks/dapps/ens";
-import { Modal } from 'antd';
+import { Popover } from "antd";
+import { InterviewerReducer } from "./InterviewerReducer";
 // changed value={address} to address={address}
-
 const { Text } = Typography;
 
 /** 
@@ -40,10 +40,16 @@ export default function Address(props) {
   const ensSplit = ens && ens.split(".");
   const validEnsCheck = ensSplit && ensSplit[ensSplit.length - 1] === "eth";
   const etherscanLink = blockExplorerLink(address, props.blockExplorer);
-  const [modal, contextHolder] = Modal.useModal();
   let displayAddress = address?.substr(0, 5) + "..." + address?.substr(-4);
 
-  console.log("displayAddress: ", displayAddress)
+  const initialState = {
+    companyName: "",
+    websiteLink: "",
+  };
+
+  const [state, dispatch] = useReducer(InterviewerReducer, initialState);
+
+  console.log("displayAddress: ", displayAddress);
   if (validEnsCheck) {
     displayAddress = ens;
   } else if (props.size === "short") {
@@ -62,12 +68,7 @@ export default function Address(props) {
   if (props.minimized) {
     return (
       <span style={{ verticalAlign: "middle" }}>
-        <a
-          style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
-          target="_blank"
-          
-          rel="noopener noreferrer"
-        >
+        <a style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }} target="_blank" rel="noopener noreferrer">
           <Blockies seed={address.toLowerCase()} size={8} scale={2} />
         </a>
       </span>
@@ -78,10 +79,33 @@ export default function Address(props) {
     <span>
       <span style={{ verticalAlign: "middle" }}>
         {props.isInterviewers ? (
-        <span onClick={()=>{console.log("dasdas####: ",address.toLowerCase())}}>
+          <Popover
+            placement="right"
+            title={"Interviewer info"}
+            content={
+              <div>
+                <p>{state.companyName}</p>
+                <p>{state.websiteLink}</p>
+              </div>
+            }
+            trigger="click"
+          >
+            <span
+              onClick={async () => {
+                const InterviewData = await props.tx(
+                  props.writeContracts.TalentToken.getInterviewerMetaData(address.toLowerCase()),
+                );
+                console.log("Interviewer address####: ", address.toLowerCase());
+                console.log("InterviewData###: ", InterviewData);
+                dispatch({ type: "GET_INTERTVIEWER_INFO", InterviewData });
+              }}
+            >
+              <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
+            </span>
+          </Popover>
+        ) : (
           <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
-        </span>) : (<Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />)}
-
+        )}
       </span>
       <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>
         {props.onChange ? (
