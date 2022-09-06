@@ -3,7 +3,7 @@ import React from "react";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import Blockies from "react-blockies";
 import { useLookupAddress } from "eth-hooks/dapps/ens";
-
+import { Modal } from 'antd';
 // changed value={address} to address={address}
 
 const { Text } = Typography;
@@ -40,7 +40,9 @@ export default function Address(props) {
   const ensSplit = ens && ens.split(".");
   const validEnsCheck = ensSplit && ensSplit[ensSplit.length - 1] === "eth";
   const etherscanLink = blockExplorerLink(address, props.blockExplorer);
+  const [modal, contextHolder] = Modal.useModal();
   let displayAddress = address?.substr(0, 5) + "..." + address?.substr(-4);
+
   console.log("displayAddress: ", displayAddress)
   if (validEnsCheck) {
     displayAddress = ens;
@@ -75,7 +77,11 @@ export default function Address(props) {
   return (
     <span>
       <span style={{ verticalAlign: "middle" }}>
-        <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
+        {props.isInterviewers ? (
+        <span onClick={()=>{console.log("dasdas####: ",address.toLowerCase())}}>
+          <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
+        </span>) : (<Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />)}
+
       </span>
       <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>
         {props.onChange ? (
