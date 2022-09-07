@@ -37,6 +37,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [isEndorseModalVisible, setIsEndorseModalVisible] = useState(false);
   const [isCandidateProfileModalVisible, setIsCandidateProfileModalVisible] = useState(false);
   const [candidateTokens, setCandidateTokens] = useState(new Map());
+  const [candidateInfoAddress, setCandidateInfoAddress] = useState();
 
   const User = ({ address }) => (
 
@@ -104,8 +105,9 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   </div>
 
-  const getCandidateTokens = (address) => {
+  const getCandidateTokens = (address, onlyUpdate) => {
     setCandidateTokens(new Map());
+    let tokens = new Map();
     readContracts.TalentToken.balanceOf(address)
       .then( tokensCount => {
         console.log(`Tokens count: ${tokensCount}`);
@@ -116,7 +118,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
               readContracts.TalentToken.tokenURI(tokenId)
               .then( uri => getJSONFromIPFS(uri))
               .then( metadata => {
-                setCandidateTokens(new Map(candidateTokens.set(tokenId, metadata)));
+                tokens = tokens.set(tokenId, metadata);
+                setCandidateTokens(tokens);
               })
             })
             .catch( err => console.log(err));
@@ -130,8 +133,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const getCandidateInfo = <div>
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
       <h3>Get candidate profile</h3>
-      <AddressInput onChange={getCandidateTokens} />
-      <Button type="primary" size="large" onClick={() => { setIsCandidateProfileModalVisible(true) }} >Get</Button>
+      <AddressInput onChange={setCandidateInfoAddress} />
+      <Button type="primary" size="large" onClick={() => { getCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
 
