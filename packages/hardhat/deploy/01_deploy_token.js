@@ -2,7 +2,7 @@
 
 const { ethers } = require("hardhat");
 
-const {utils } = require("ethers");
+const { utils } = require("ethers");
 
 const localChainId = "31337";
 
@@ -32,7 +32,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   TalentToken.grantRole(
     "0xdf8b4c520ffe197c5343c6f5aec59570151ef9a492f2c624fd45ddde6135ec42",
-   "0x43B6e10FD431D1DCf17C9Ec54Ed5C3d9B8Bf3094")
+    "0x43B6e10FD431D1DCf17C9Ec54Ed5C3d9B8Bf3094")
   /*  await YourContract.setPurpose("Hello");
   
     // To take ownership of yourContract using the ownable library uncomment next line and add the 
