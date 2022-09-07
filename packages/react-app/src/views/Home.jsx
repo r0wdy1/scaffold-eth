@@ -1,16 +1,14 @@
 import { useContractReader, useUserAddress } from "eth-hooks";
-import { ethers } from "ethers";
+import { useEventListener } from "eth-hooks/events/useEventListener";
 import React from "react";
-import { Link } from "react-router-dom";
 import { AddressInput, Address, Blockie } from "../components";
 import { Button } from 'antd';
 import { useState } from "react";
-import { Rate } from 'antd';
 
 import { Col, Row } from 'antd';
 import EndorseModal from "./EndorseModal";
-import Modal from "../components/Modal";
-import ModalContent from "../components/Modal";
+import CandidateProfileModal from "./CandidateProfileModal";
+import { getJSONFromIPFS } from "../helpers/pinata";
 
 /**
  * web3 props can be passed from '../App.jsx' into your local view component for use
@@ -18,7 +16,7 @@ import ModalContent from "../components/Modal";
  * @param {*} readContracts contracts from current chain already pre-loaded using ethers contract module. More here https://docs.ethers.io/v5/api/contract/contract/
  * @returns react component
  **/
-function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, mainnetProvider }) {
+function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, mainnetProvider, localProvider }) {
   // you can also use hooks locally in your component of choice
   // in this case, let's keep track of 'purpose' variable from our contract
 
@@ -36,7 +34,10 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
 
   const [interviewerAddress, setInterviewerAddress] = useState();
   const [candidateAddress, setCandidateAddress] = useState();
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEndorseModalVisible, setIsEndorseModalVisible] = useState(false);
+  const [isCandidateProfileModalVisible, setIsCandidateProfileModalVisible] = useState(false);
+  const [candidateTokens, setCandidateTokens] = useState(new Map());
+  const [candidateInfoAddress, setCandidateInfoAddress] = useState();
 
   const User = ({ address }) => (
 
@@ -79,36 +80,61 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     console.log(await result);
   }
 
-
   const endorseCandidate =
     <div>
       <div style={{ width: 350, padding: 16, margin: "auto" }}>
-
         <h3>Endorse a candidate</h3>
         <AddressInput onChange={setCandidateAddress} />
         {/* <Rate allowHalf defaultValue={2.5} /> */}
-        <Button type="primary" size="large" onClick={() => { setIsModalVisible(true) }} >Add</Button>
-
-
-
+        <Button type="primary" size="large" onClick={() => { setIsEndorseModalVisible(true) }} >Add</Button>
       </div>
     </div>
-
-
-
 
   const onAddInterviewer = async () => {
     const result = tx(writeContracts.TalentToken.grantRole(interviewerRole, interviewerAddress), txCallBack);
     console.log("awaiting metamask/web3 confirm result...", result);
     console.log(await result);
-
   }
+
   const addInterviewer = <div>
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
 
       <h3>Add a new interviewer</h3>
       <AddressInput onChange={setInterviewerAddress} />
       <Button type="primary" size="large" onClick={onAddInterviewer} >Add</Button>
+    </div>
+  </div>
+
+  const getCandidateTokens = (address, onlyUpdate) => {
+    setCandidateTokens(new Map());
+    let tokens = new Map();
+    readContracts.TalentToken.balanceOf(address)
+      .then( tokensCount => {
+        console.log(`Tokens count: ${tokensCount}`);
+        for (let tokenIndex = 0; tokenIndex < tokensCount; tokenIndex++) {
+          readContracts.TalentToken.tokenOfOwnerByIndex(address, tokenIndex)
+            .then( tokenId => {
+              console.log(tokenId);
+              readContracts.TalentToken.tokenURI(tokenId)
+              .then( uri => getJSONFromIPFS(uri))
+              .then( metadata => {
+                tokens = tokens.set(tokenId, metadata);
+                setCandidateTokens(tokens);
+              })
+            })
+            .catch( err => console.log(err));
+        }
+      })
+      .catch( err => {
+        // nothing to do
+      })
+  }
+  
+  const getCandidateInfo = <div>
+    <div style={{ width: 350, padding: 16, margin: "auto" }}>
+      <h3>Get candidate profile</h3>
+      <AddressInput onChange={setCandidateInfoAddress} />
+      <Button type="primary" size="large" onClick={() => { getCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
 
@@ -121,14 +147,21 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       <div>
         <h2> My current role: {isAdmin ? 'Admin' : ''} {isInterviewer ? 'interviewer' : ''}</h2>
       </div>
+      {getCandidateInfo}
       {isAdmin ? addInterviewer : null}
       {isInterviewer ? endorseCandidate : null}
       <EndorseModal 
-        isModalVisible={isModalVisible} 
-        setIsModalVisible={setIsModalVisible} 
+        isModalVisible={isEndorseModalVisible} 
+        setIsModalVisible={setIsEndorseModalVisible} 
         sendEndorseTx={sendEndorseTx} 
         candidateAddress={candidateAddress} 
         interviewerAddress={address}
+      />
+      <CandidateProfileModal 
+        isModalVisible={isCandidateProfileModalVisible} 
+        setIsModalVisible={setIsCandidateProfileModalVisible} 
+        candidateAddress={candidateAddress}
+        candidateTokens={candidateTokens}
       />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>

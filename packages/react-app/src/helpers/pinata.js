@@ -12,3 +12,7 @@ export async function pinJSONToIPFS(data) {
     const res = await axios(config);
     return "https://ipfs.io/ipfs/" + res.data.IpfsHash; // TODO: make gate configurable
 }
+
+export async function getJSONFromIPFS(url) {
+    return fetch(url).then(res => res.json());
+}
