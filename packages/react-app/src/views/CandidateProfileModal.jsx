@@ -28,7 +28,8 @@ const CandidateProfileModal = ({isModalVisible, setIsModalVisible, candidateToke
             <div style={{ margin: "auto" }}>
                 <Collapse>
                     {Array.from(candidateTokens).map(([tokenId, token]) => {
-                        return (<Panel header={`Token from ${token.interviewer.address}`} key={tokenId}>
+                        console.log(token);
+                        return (<Panel header={`Отзыв от ${token.interviewer.name}`} key={tokenId}>
                             <Card title={`${token.candidate.name} ${token.candidate.surname}`} >
                                 <Row align-items="center">
                                     <Col span={12}><Text>{token.candidate.position}</Text></Col>

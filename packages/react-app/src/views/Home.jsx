@@ -115,6 +115,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
         const tokenId = await readContracts.TalentToken.tokenOfOwnerByIndex(address, tokenIndex);
         const tokenURI = await readContracts.TalentToken.tokenURI(tokenId);
         const tokenMetadata = await getJSONFromIPFS(tokenURI);
+        const interviewerMetadata = await readContracts.TalentToken.getInterviewerMetaData(tokenMetadata.interviewer.address);
+        tokenMetadata.interviewer.name = interviewerMetadata.companyName;
         tokens = tokens.set(tokenId, tokenMetadata);
       }
       setCandidateTokens(tokens);
