@@ -14,5 +14,5 @@ export async function pinJSONToIPFS(data) {
 }
 
 export async function getJSONFromIPFS(url) {
-    return fetch(url).then(res => res.json())        
+    return fetch(url).then(res => res.json());
 }

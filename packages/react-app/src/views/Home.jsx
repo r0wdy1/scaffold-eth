@@ -1,17 +1,12 @@
 import { useContractReader, useUserAddress } from "eth-hooks";
 import { useEventListener } from "eth-hooks/events/useEventListener";
-import { ethers } from "ethers";
 import React from "react";
-import { Link } from "react-router-dom";
 import { AddressInput, Address, Blockie } from "../components";
 import { Button } from 'antd';
 import { useState } from "react";
-import { Rate } from 'antd';
 
 import { Col, Row } from 'antd';
 import EndorseModal from "./EndorseModal";
-import Modal from "../components/Modal";
-import ModalContent from "../components/Modal";
 import CandidateProfileModal from "./CandidateProfileModal";
 import { getJSONFromIPFS } from "../helpers/pinata";
 
@@ -30,7 +25,6 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const interviewerRole = "0x6254a434224c7765cc60976b96d4c296321339f8c1d711b8cba8964de4306c78";
   const isAdmin = useContractReader(readContracts, "TalentToken", "hasRole", ["0x0000000000000000000000000000000000000000000000000000000000000000", address]);
   const isInterviewer = useContractReader(readContracts, "TalentToken", "hasRole", [interviewerRole, address]);
-  const transferEvents = useEventListener(readContracts, 'TalentToken', 'Transfer', localProvider, 0);
 
   console.log("interviewers", interviewers);
   console.log("my address", address);
@@ -42,8 +36,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [candidateAddress, setCandidateAddress] = useState();
   const [isEndorseModalVisible, setIsEndorseModalVisible] = useState(false);
   const [isCandidateProfileModalVisible, setIsCandidateProfileModalVisible] = useState(false);
-  const [candidateTokens, setCandidateTokens] = useState(new Array());
-  const [tokens, setTokens] = useState(new Map());
+  const [candidateTokens, setCandidateTokens] = useState(new Map());
 
   const User = ({ address }) => (
 
@@ -111,18 +104,27 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   </div>
 
-  const getCandidateTokens = (address) => {
-    setCandidateAddress(address);
-    const candidateTokens = transferEvents.filter((item) => item.args.to == address).map((item) => {
-      console.log(item.args.tokenId);
-      readContracts.TalentToken.tokenURI(item.args.tokenId).then((uri) => {
-        getJSONFromIPFS(uri).then((metadata) => {
-          setTokens(new Map(tokens.set(item.args.tokenId, metadata)));
-        });
-      });
-      return item.args.tokenId;
-    })
-    setCandidateTokens(candidateTokens);
+  const getCandidateTokens = async (address) => {
+    setCandidateTokens(new Map());
+    readContracts.TalentToken.balanceOf(address)
+      .then( tokensCount => {
+        console.log(`Tokens count: ${tokensCount}`);
+        for (let tokenIndex = 0; tokenIndex < tokensCount; tokenIndex++) {
+          readContracts.TalentToken.tokenOfOwnerByIndex(address, tokenIndex)
+            .then( tokenId => {
+              console.log(tokenId);
+              readContracts.TalentToken.tokenURI(tokenId)
+              .then( uri => getJSONFromIPFS(uri))
+              .then( metadata => {
+                setCandidateTokens(new Map(candidateTokens.set(tokenId, metadata)));
+              })
+            })
+            .catch( err => console.log(err));
+        }
+      })
+      .catch( err => {
+        // nothing to do
+      })
   }
   
   const getCandidateInfo = <div>
@@ -155,10 +157,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       <CandidateProfileModal 
         isModalVisible={isCandidateProfileModalVisible} 
         setIsModalVisible={setIsCandidateProfileModalVisible} 
-        transferEvents={transferEvents}
         candidateAddress={candidateAddress}
         candidateTokens={candidateTokens}
-        tokens={tokens}
       />
       <Row>
         <Col span={12}>{interviewersBoard}</Col>
