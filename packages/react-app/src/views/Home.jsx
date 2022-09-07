@@ -107,36 +107,28 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   );
 
-  const getCandidateTokens = (address, onlyUpdate) => {
-    setCandidateTokens(new Map());
-    let tokens = new Map();
-    readContracts.TalentToken.balanceOf(address)
-      .then( tokensCount => {
-        console.log(`Tokens count: ${tokensCount}`);
-        for (let tokenIndex = 0; tokenIndex < tokensCount; tokenIndex++) {
-          readContracts.TalentToken.tokenOfOwnerByIndex(address, tokenIndex)
-            .then( tokenId => {
-              console.log(tokenId);
-              readContracts.TalentToken.tokenURI(tokenId)
-              .then( uri => getJSONFromIPFS(uri))
-              .then( metadata => {
-                tokens = tokens.set(tokenId, metadata);
-                setCandidateTokens(tokens);
-              })
-            })
-            .catch( err => console.log(err));
-        }
-      })
-      .catch( err => {
-        // nothing to do
-      })
+  const updateCandidateTokens = async (address) => {
+    try {
+      const tokensCount = await readContracts.TalentToken.balanceOf(address);
+      let tokens = new Map();
+      for (let tokenIndex = 0; tokenIndex < tokensCount; tokenIndex++) {
+        const tokenId = await readContracts.TalentToken.tokenOfOwnerByIndex(address, tokenIndex);
+        const tokenURI = await readContracts.TalentToken.tokenURI(tokenId);
+        const tokenMetadata = await getJSONFromIPFS(tokenURI);
+        tokens = tokens.set(tokenId, tokenMetadata);
+      }
+      setCandidateTokens(tokens);
+    } 
+    catch (err) {
+      setCandidateTokens(new Map());
+    }
   }
   
   const getCandidateInfo = <div>
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
       <h3>Get candidate profile</h3>
       <AddressInput onChange={setCandidateInfoAddress} />
-      <Button type="primary" size="large" onClick={() => { getCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
+      <Button type="primary" size="large" onClick={() => { updateCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
 
