@@ -104,7 +104,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   </div>
 
-  const getCandidateTokens = async (address) => {
+  const getCandidateTokens = (address) => {
     setCandidateTokens(new Map());
     readContracts.TalentToken.balanceOf(address)
       .then( tokensCount => {

@@ -3,9 +3,15 @@ import React from 'react';
 import {
     Modal,
     Collapse,
+    Card,
+    Rate,
+    Row,
+    Col,
+    Typography
 } from 'antd';
 
 const { Panel } = Collapse;
+const { Text } = Typography;
 
 const CandidateProfileModal = ({isModalVisible, setIsModalVisible, candidateTokens}) => {
     const handleCancel = () => {
@@ -23,10 +29,12 @@ const CandidateProfileModal = ({isModalVisible, setIsModalVisible, candidateToke
                 <Collapse>
                     {Array.from(candidateTokens).map(([tokenId, token]) => {
                         return (<Panel header={`Token from ${token.interviewer.address}`} key={tokenId}>
-                            <p>{token.candidate.name}</p>
-                            <p>{token.candidate.surname}</p>
-                            <p>{token.candidate.position}</p>
-                            <p>{token.candidate.rate}</p>
+                            <Card title={`${token.candidate.name} ${token.candidate.surname}`} >
+                                <Row align-items="center">
+                                    <Col span={12}><Text>{token.candidate.position}</Text></Col>
+                                    <Col span={12}><Rate disabled defaultValue={token.candidate.rate} /></Col>
+                                </Row>
+                            </Card>
                         </Panel>);
                     })}
                 </Collapse>
