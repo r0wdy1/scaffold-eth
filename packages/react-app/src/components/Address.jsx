@@ -5,6 +5,7 @@ import Blockies from "react-blockies";
 import { useLookupAddress } from "eth-hooks/dapps/ens";
 import { Popover } from "antd";
 import { InterviewerReducer } from "./InterviewerReducer";
+import { useContractReader } from "eth-hooks";
 // changed value={address} to address={address}
 const { Text } = Typography;
 
@@ -41,7 +42,9 @@ export default function Address(props) {
   const validEnsCheck = ensSplit && ensSplit[ensSplit.length - 1] === "eth";
   const etherscanLink = blockExplorerLink(address, props.blockExplorer);
   let displayAddress = address?.substr(0, 5) + "..." + address?.substr(-4);
-
+  const InterviewMetaData = useContractReader(props.readContracts, "TalentToken", "getInterviewerMetaData", [
+    address.toLowerCase(),
+  ]);
   const initialState = {
     companyName: "",
     websiteLink: "",
@@ -91,13 +94,10 @@ export default function Address(props) {
             trigger="click"
           >
             <span
-              onClick={async () => {
-                const InterviewData = await props.tx(
-                  props.writeContracts.TalentToken.getInterviewerMetaData(address.toLowerCase()),
-                );
+              onClick={() => {
                 console.log("Interviewer address####: ", address.toLowerCase());
-                console.log("InterviewData###: ", InterviewData);
-                dispatch({ type: "GET_INTERTVIEWER_INFO", InterviewData });
+                console.log("InterviewData###: ", InterviewMetaData.companyName);
+                dispatch({ type: "GET_INTERTVIEWER_INFO", InterviewMetaData });
               }}
             >
               <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />

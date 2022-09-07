@@ -41,7 +41,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isInterviewerModalVisable, setInterviewerModalVi] = useState(false);
 
-  const User = ({ address, isInterviewer, tx, writeContracts }) =>
+  const User = ({ address, isInterviewer, readContracts }) =>
     address ? (
       <div>
         {/* <Blockie address={address} /> */}
@@ -50,8 +50,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
           ensProvider={mainnetProvider}
           fontSize={16}
           isInterviewers={isInterviewer}
-          tx={tx}
-          writeContracts={writeContracts}
+          readContracts={readContracts}
         />
       </div>
     ) : null;
@@ -59,7 +58,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     <div>
       <h2>Interviewers board</h2>
       {interviewers?.map(address => (
-        <User address={address} isInterviewer={true} tx={tx} writeContracts={writeContracts} />
+        <User address={address} isInterviewer={true} readContracts={readContracts} />
       ))}
     </div>
   );

@@ -1,7 +1,7 @@
 const handlers = {
   GET_INTERTVIEWER_INFO: (state, action) => ({
-    companyName: action.companyName,
-    websiteLink: action.websiteLink,
+    companyName: action.InterviewMetaData.companyName,
+    websiteLink: action.InterviewMetaData.websiteLink,
   }),
   DEFAULT: state => state,
 };
