@@ -1,13 +1,5 @@
-import React from 'react';
-import {
-  Form,
-  Rate,
-  Upload,
-  Input,
-  Modal,
-  Button,
-  Space,
-} from 'antd';
+import React from "react";
+import { Form, Rate, Upload, Input, Modal, Button, Space } from "antd";
 
 const formItemLayout = {
   labelCol: {
@@ -22,8 +14,8 @@ const tailLayout = {
   wrapperCol: { offset: 6, span: 16 },
 };
 
-const normFile = (e) => {
-  console.log('Upload event:', e);
+const normFile = e => {
+  console.log("Upload event:", e);
 
   if (Array.isArray(e)) {
     return e;
@@ -32,9 +24,9 @@ const normFile = (e) => {
   return e?.fileList;
 };
 
-const InterviewerModal = ({isModalVisible, setIsModalVisible, addInterviewer}) => {
-  const onFinish = async (values) => {
-    console.log('Received values of form: ', values);
+const InterviewerModal = ({ isModalVisible, setIsModalVisible, addInterviewer }) => {
+  const onFinish = async values => {
+    console.log("Received values of form: ", values);
     // const metadata = {
     //   candidate: {
     //     name: values.name,
@@ -50,7 +42,7 @@ const InterviewerModal = ({isModalVisible, setIsModalVisible, addInterviewer}) =
     // const tokenURI = await pinJSONToIPFS(JSON.stringify(metadata))
     // console.log("Metadata uploaded. URI: ", tokenURI);
 
-    await addInterviewer(values.CompanyName,values.LinkToCompany);
+    await addInterviewer(values.CompanyName, values.LinkToCompany);
     setIsModalVisible(false);
   };
 
@@ -67,17 +59,13 @@ const InterviewerModal = ({isModalVisible, setIsModalVisible, addInterviewer}) =
       title="Данные интервьюера"
       visible={isModalVisible}
       onCancel={handleCancel}
-      footer={[]}//this to hide the default inputs of the modal
+      footer={[]} //this to hide the default inputs of the modal
     >
-      <Form
-        name="validate_other"
-        onFinish={onFinish}
-        {...formItemLayout}
-      >
+      <Form name="validate_other" onFinish={onFinish} {...formItemLayout} labelCol={{ span: 11 }}>
         <Form.Item
           label="Название компании"
           name="CompanyName"
-          rules={[{ required: true, message: 'Пожалуйста, заполните название компании!' }]}
+          rules={[{ required: true, message: "Пожалуйста, заполните название компании!" }]}
         >
           <Input />
         </Form.Item>
@@ -85,7 +73,7 @@ const InterviewerModal = ({isModalVisible, setIsModalVisible, addInterviewer}) =
         <Form.Item
           label="Ссылка на сайт компании"
           name="LinkToCompany"
-          rules={[{ required: true, message: 'Пожалуйста, заполните ссылку на сайт компании!' }]}
+          rules={[{ required: true, message: "Пожалуйста, заполните ссылку на сайт компании!" }]}
         >
           <Input />
         </Form.Item>

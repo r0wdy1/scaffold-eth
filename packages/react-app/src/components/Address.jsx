@@ -42,9 +42,11 @@ export default function Address(props) {
   const validEnsCheck = ensSplit && ensSplit[ensSplit.length - 1] === "eth";
   const etherscanLink = blockExplorerLink(address, props.blockExplorer);
   let displayAddress = address?.substr(0, 5) + "..." + address?.substr(-4);
+  console.log("address###: ", address);
   const InterviewMetaData = useContractReader(props.readContracts, "TalentToken", "getInterviewerMetaData", [
-    address.toLowerCase(),
+    address?.toLowerCase(),
   ]);
+  // const InterviewMetaData = {};
   const initialState = {
     companyName: "",
     websiteLink: "",
