@@ -107,6 +107,12 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   );
 
+  const updateCandidateAddress = async (address) => {
+    setCandidateInfoAddress(address);
+    setCandidateTokens(new Map());
+    updateCandidateTokens(address);
+  }
+
   const updateCandidateTokens = async (address) => {
     try {
       const tokensCount = await readContracts.TalentToken.balanceOf(address);
@@ -129,7 +135,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const getCandidateInfo = <div>
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
       <h3>Get candidate profile</h3>
-      <AddressInput onChange={setCandidateInfoAddress} />
+      <AddressInput onChange={updateCandidateAddress} />
       <Button type="primary" size="large" onClick={() => { updateCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
