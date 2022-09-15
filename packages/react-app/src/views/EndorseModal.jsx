@@ -49,9 +49,13 @@ const EndorseModal = ({isModalVisible, setIsModalVisible, sendEndorseTx, candida
                 address: interviewerAddress,
             }
         };
-        const tokenURI = await pinJSONToIPFS(JSON.stringify(metadata))
-        console.log("Metadata uploaded. URI: ", tokenURI);
-        await sendEndorseTx(candidateAddress, tokenURI);
+        try {
+            const tokenURI = await pinJSONToIPFS(JSON.stringify(metadata))
+            console.log("Metadata uploaded. URI: ", tokenURI);
+            await sendEndorseTx(candidateAddress, tokenURI);
+        } catch (e) {
+            console.error(`Failed to create nft: ${e}`);
+        }
         setIsModalVisible(false);
     };
 
