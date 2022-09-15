@@ -59,9 +59,6 @@ contract TalentToken is AccessControl, ERC721URIStorage, ERC721Enumerable {
         interviewersAddress.push(_interviewer);
         isAdded[_interviewer] = true;
         _grantRole(keccak256("INTERVIEWER"), _interviewer);
-
-
-
     }
 
     function endorse(address to, string memory _tokenURI)

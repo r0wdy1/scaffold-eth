@@ -40,9 +40,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
   const [candidateAddress, setCandidateAddress] = useState();
   const [isEndorseModalVisible, setIsEndorseModalVisible] = useState(false);
   const [isCandidateProfileModalVisible, setIsCandidateProfileModalVisible] = useState(false);
-  const [candidateTokens, setCandidateTokens] = useState(new Map());
   const [candidateInfoAddress, setCandidateInfoAddress] = useState();
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isInterviewerModalVisable, setInterviewerModalVi] = useState(false);
 
   const User = ({ address, isInterviewer, readContracts }) =>
@@ -107,7 +105,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     </div>
   );
 
-  const updateCandidateTokens = async (address) => {
+  const getCandidateTokens = async (address) => {
     try {
       const tokensCount = await readContracts.TalentToken.balanceOf(address);
       let tokens = new Map();
@@ -119,10 +117,11 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
         tokenMetadata.interviewer.name = interviewerMetadata.companyName;
         tokens = tokens.set(tokenId, tokenMetadata);
       }
-      setCandidateTokens(tokens);
+      return tokens;
     } 
     catch (err) {
-      setCandidateTokens(new Map());
+      console.error(err);
+      return new Map();
     }
   }
   
@@ -130,7 +129,7 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
     <div style={{ width: 350, padding: 16, margin: "auto" }}>
       <h3>Get candidate profile</h3>
       <AddressInput onChange={setCandidateInfoAddress} />
-      <Button type="primary" size="large" onClick={() => { updateCandidateTokens(candidateInfoAddress); setIsCandidateProfileModalVisible(true) }} >Get</Button>
+      <Button type="primary" size="large" onClick={() => { setIsCandidateProfileModalVisible(true) }} >Get</Button>
     </div>
   </div>
 
@@ -180,8 +179,8 @@ function Home({ yourLocalBalance, readContracts, address, tx, writeContracts, ma
       <CandidateProfileModal 
         isModalVisible={isCandidateProfileModalVisible} 
         setIsModalVisible={setIsCandidateProfileModalVisible} 
-        candidateAddress={candidateAddress}
-        candidateTokens={candidateTokens}
+        candidateAddress={candidateInfoAddress}
+        getCandidateTokens={getCandidateTokens}
       />
       <InterviewerModal
         isModalVisible={isInterviewerModalVisable}
